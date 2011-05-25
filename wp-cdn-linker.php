@@ -49,25 +49,53 @@ function ossdl_off_options() {
 	$example_cdn_uri = str_replace('http://', 'http://cdn.', str_replace('www.', '', get_option('siteurl')));
 
 	?><div class="wrap">
-		<h2>CDN Linker</h2>
-		<p>Many Wordpress plugins misbehave when linking to their JS or CSS files, and yet there is no filter to let your old posts point to a statics' site or CDN for images.
-		Therefore this plugin replaces at any links into <code>wp-content</code> and <code>wp-includes</code> directories (except for PHP files) the <code>blog_url</code> by the URL you provide below.
-		That way you can either copy all the static content to a dedicated host or mirror the files at a CDN by <a href="http://knowledgelayer.softlayer.com/questions/365/How+does+Origin+Pull+work%3F" target="_blank">origin pull</a>.</p>
-		<p><strong style="color: red">WARNING:</strong> Test some static urls e.g., <code><?php echo(get_option('ossdl_off_cdn_url') == get_option('siteurl') ? $example_cdn_uri : get_option('ossdl_off_cdn_url')); ?>/wp-includes/js/prototype.js</code> to ensure your CDN service is fully working before saving changes.</p>
+		<h2>Speed Cache</h2>
+
+		<div id="step1" class="assistant">
+			<div class="alternative side-by-side">
+				Subscribe by Paypal
+				<form name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" method="post">
+					<input type="hidden" name="cmd" value="_xclick-subscriptions">
+					<input type="hidden" name="business" value="wordpress-cdn@arcostream.com">
+					<input type="hidden" name="currency_code" value="USD">
+					<input type="hidden" name="no_shipping" value="1">
+					<input type="image" src="http://www.paypal.com/en_US/i/btn/btn_subscribe_LG.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
+					<input type="hidden" name="a3" value="2.99">
+					<input type="hidden" name="p3" value="1">
+					<input type="hidden" name="t3" value="M">
+					<input type="hidden" name="src" value="1">
+					<input type="hidden" name="sra" value="1">
+				</form>
+				2.99 USD per month &mdash;
+				click here for details
+			</div>
+			<div class="delimiter side-by-side">
+				OR
+			</div>
+			<div class="alternative side-by-side">
+				<label for="arcostream_custid">Already a Subscriber?</label><br />
+				<input type="text" name="arcostream_custid" id="arcostream_custid" value="your customer ID" size="24" class="regular-text code" /><br />
+				<input type="reset" class="button-secondary" value="<?php _e('Clear and Reset') ?>" /> or
+				<input type="submit" class="button-primary" value="<?php _e('Configure') ?>" />
+			</div>
+		</div>
+		<div id="step2" class="assistant">
+			<ol class="checks">
+				<li id="prereq_account">account created</li>
+				<li id="prereq_payment">we have received your payment for the current period</li>
+				<li id="prereq_cdn">CDN is configured</li>
+				<li id="prereq_dns">DNS is configured</li>
+				<li id="prereq_status">loading from CDN in effect</li>
+			</ol>
+		</div>
+		<div id="step3" class="assistant">
+			Status [STATUS IMAGE]
+		</div>
+
+		<h3>Advanced Options</h3>
 		<p><form method="post" action="">
+
 		<table class="form-table"><tbod>
-			<tr valign="top">
-				<th scope="row"><label for="ossdl_off_cdn_url">CDN URL</label></th>
-				<td>
-					<input type="text" name="ossdl_off_cdn_url" value="<?php echo(get_option('ossdl_off_cdn_url')); ?>" size="64" class="regular-text code" />
-					<span class="description">The new URL to be used in place of <?php echo(get_option('siteurl')); ?> for rewriting. No trailing <code>/</code> please. E.g. <code><?php echo($example_cdn_uri); ?></code>.
-					&mdash;
-					You can use <code>%4%</code> (number between 1 and 9, surrounded by percent signs) to enable up to that many hostname variations.
-					1 or less doesn't make sense and more than 4 is beyond optimum. If you are going to use 3 or more, then make sure they have different IPs or
-					<a href="http://statichtml.com/2010/use-unique-ips-for-sharded-asset-hosts.html">some routers will block requests</a> to them.
-					</span>
-				</td>
-			</tr>
 			<tr valign="top">
 				<th scope="row"><label for="ossdl_off_rootrelative">rewrite root-relative refs</label></th>
 				<td>
