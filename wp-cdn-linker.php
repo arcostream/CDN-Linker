@@ -34,19 +34,25 @@ function ossdl_off_deactivate() {
 
 /********** WordPress Interface ********/
 add_action('admin_menu', 'ossdl_off_menu');
+add_action('admin_head', 'admin_register_head');
 
 function ossdl_off_menu() {
 	add_options_page('CDN Linker', 'CDN Linker', 8, __FILE__, 'ossdl_off_options');
 }
 
+function admin_register_head() {
+	$css_url = get_option('siteurl') . '/wp-content/plugins/' . basename(dirname(__FILE__));
+	$css_url .= '/backend.css';
+	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"$css_url\" />\n";
+}
+
 function ossdl_off_options() {
+	// handling of the 'advanced settings' input
 	if ( isset($_POST['action']) && ( $_POST['action'] == 'update_ossdl_off' )){
-		update_option('ossdl_off_cdn_url', $_POST['ossdl_off_cdn_url']);
 		update_option('ossdl_off_include_dirs', $_POST['ossdl_off_include_dirs'] == '' ? 'wp-content,wp-includes' : $_POST['ossdl_off_include_dirs']);
 		update_option('ossdl_off_exclude', $_POST['ossdl_off_exclude']);
 		update_option('ossdl_off_rootrelative', !!$_POST['ossdl_off_rootrelative']);
 	}
-	$example_cdn_uri = str_replace('http://', 'http://cdn.', str_replace('www.', '', get_option('siteurl')));
 
 	?><div class="wrap">
 		<h2>Speed Cache</h2>
