@@ -6,7 +6,12 @@ Description: Speeds up your Wordpress site by setting up and configuring a CDN f
 Version: 1.3.1
 */
 
-/** URL of the CDN Signup Automator, w/o trailing slash. */
+/**
+ * URL of the CDN Signup Automator, w/o trailing slash.
+ *
+ * Because someone could spy on the customer knowing the token,
+ * the connection must be encrypted ("https://").
+ */
 $arcostream_automator = 'http://leaf.hurrikane.de:8080';
 
 if ( @include_once('cdn-linker-base.php') ) {
@@ -20,6 +25,7 @@ function ossdl_off_activate() {
 	add_option('ossdl_off_include_dirs', 'wp-content,wp-includes');
 	add_option('ossdl_off_exclude', '.php');
 	add_option('ossdl_off_rootrelative', '');
+	add_option('arcostream_token', random_string(4).'-'.random_string(4).'-'.random_string(4).'-'.random_string(4));
 }
 register_activation_hook( __FILE__, 'ossdl_off_activate');
 
@@ -28,6 +34,7 @@ function ossdl_off_deactivate() {
 	delete_option('ossdl_off_include_dirs');
 	delete_option('ossdl_off_exclude');
 	delete_option('ossdl_off_rootrelative');
+	// delete_option('arcostream_token');
 }
 register_deactivation_hook( __FILE__, 'ossdl_off_deactivate');
 
@@ -54,8 +61,8 @@ function ossdl_off_options() {
 		update_option('ossdl_off_include_dirs', $_POST['ossdl_off_include_dirs'] == '' ? 'wp-content,wp-includes' : $_POST['ossdl_off_include_dirs']);
 		update_option('ossdl_off_exclude', $_POST['ossdl_off_exclude']);
 		update_option('ossdl_off_rootrelative', !!$_POST['ossdl_off_rootrelative']);
-	} else if ( isset($_POST['action']) && ( $_POST['action'] == 'advanced' )){
-		update_option('arcostream_custid', $_POST['arcostream_custid']);
+	} else if ( isset($_POST['action']) && ( $_POST['action'] == 'token' )){
+		update_option('arcostream_token', $_POST['arcostream_token']);
 		// XXX: fetch configuration settings from mediator
 		// XXX: set them here
 	}
@@ -67,7 +74,7 @@ function ossdl_off_options() {
 		<div id="step1">
 			<table border="0"><tbody><tr>
 			<td valign="top">
-				<iframe src="<?php echo($arcostream_automator); ?>/paypal/button">
+				<iframe src="<?php echo($arcostream_automator); ?>/paypal/button?token=<?php echo(get_option('arcostream_token')) ?>">
 					You cannot currently subscribe by Paypal.
 					Our servers are undergoing maintenance now.
 					Please try again later.
@@ -79,10 +86,10 @@ function ossdl_off_options() {
 			<td valign="top">
 				<form method="post" action="">
 				<label for="arcostream_custid">Already a Subscriber?</label><br />
-				<input type="text" name="arcostream_custid" id="arcostream_custid" value="your customer ID" size="24" class="regular-text code" /><br />
+				<input type="text" name="arcostream_custid" id="arcostream_token" value="your secret token" size="24" class="regular-text code" /><br />
 				<input type="reset" class="button-secondary" value="<?php _e('Clear and Reset') ?>" /> or
 				<input type="submit" class="button-primary" value="<?php _e('Configure') ?>" />
-				<input type="hidden" name="action" value="customerid" />
+				<input type="hidden" name="action" value="token" />
 				</form>
 			</td>
 			</tr></tbody></table>
