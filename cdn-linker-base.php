@@ -201,8 +201,10 @@ class CDNLinksRewriterWordpress extends CDNLinksRewriter
  * It is called by Wordpress.
  */
 function do_ossdl_off_ob_start() {
-	$rewriter = new CDNLinksRewriterWordpress();
-	$rewriter->register_as_output_buffer();
+	if (get_option('arcostream_account_status') == 'ok') {
+		$rewriter = new CDNLinksRewriterWordpress();
+		$rewriter->register_as_output_buffer();
+	}
 }
 
 /**

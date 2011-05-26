@@ -18,14 +18,31 @@ if ( @include_once('cdn-linker-base.php') ) {
 	add_action('template_redirect', 'do_ossdl_off_ob_start');
 }
 
+include_once('cdn-linker-upstream.php');
+
 /********** WordPress Administrative ********/
+
+function ossdl_off_update_data_from_upstream() {
+	global $arcostream_automator;
+	$data = new TokenData(get_option('arcostream_token'), $arcostream_automator);
+	if (!is_null($data->cdn_url)) {
+		update_option('ossdl_off_cdn_url', $data->cdn_url);
+		update_option('arcostream_account_status', $data->status_account);
+	}
+	return $data;
+}
 
 function ossdl_off_activate() {
 	add_option('ossdl_off_cdn_url', get_option('siteurl'));
 	add_option('ossdl_off_include_dirs', 'wp-content,wp-includes');
 	add_option('ossdl_off_exclude', '.php');
 	add_option('ossdl_off_rootrelative', '');
-	add_option('arcostream_token', random_string(4).'-'.random_string(4).'-'.random_string(4).'-'.random_string(4));
+	add_option('arcostream_account_status', 'unknown');
+	if (!get_option('arcostream_token')) {
+		add_option('arcostream_token', random_string(4).'-'.random_string(4).'-'.random_string(4).'-'.random_string(4));
+	} else {
+		ossdl_off_update_data_from_upstream();
+	}
 }
 register_activation_hook( __FILE__, 'ossdl_off_activate');
 
@@ -34,7 +51,10 @@ function ossdl_off_deactivate() {
 	delete_option('ossdl_off_include_dirs');
 	delete_option('ossdl_off_exclude');
 	delete_option('ossdl_off_rootrelative');
-	// delete_option('arcostream_token');
+	if (get_option('arcostream_account_status') == 'unknown') {
+		delete_option('arcostream_token');
+	}
+	delete_option('arcostream_account_status');
 }
 register_deactivation_hook( __FILE__, 'ossdl_off_deactivate');
 
@@ -55,7 +75,18 @@ function admin_register_head() {
 	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"$css_url\" />\n";
 }
 
+function ossdl_off_class_for_status($status) {
+	if (is_null($status)) {
+		return 'unknown';
+	} else if ($status == true || $status == 'ok') {
+		return 'success';
+	} else {
+		return 'failed';
+	}
+}
+
 function ossdl_off_options() {
+	$token_data = false;
 	// handling of the 'advanced settings' input
 	if ( isset($_POST['action']) && ( $_POST['action'] == 'advanced' )) {
 		update_option('ossdl_off_include_dirs', $_POST['ossdl_off_include_dirs'] == '' ? 'wp-content,wp-includes' : $_POST['ossdl_off_include_dirs']);
@@ -63,8 +94,7 @@ function ossdl_off_options() {
 		update_option('ossdl_off_rootrelative', !!$_POST['ossdl_off_rootrelative']);
 	} else if ( isset($_POST['action']) && ( $_POST['action'] == 'token' )){
 		update_option('arcostream_token', $_POST['arcostream_token']);
-		// XXX: fetch configuration settings from mediator
-		// XXX: set them here
+		$token_data = ossdl_off_update_data_from_upstream();
 	}
 
 	global $arcostream_automator;
@@ -96,7 +126,7 @@ function ossdl_off_options() {
 		</div>
 		<div id="step2">
 			<ol class="checks">
-				<li id="prereq_account" class="unknown">account created</li>
+				<li id="prereq_account" class="<?php echo(ossdl_off_class_for_status($token_data->exists)); ?>">account created</li>
 				<li id="prereq_payment" class="unknown">payment for the current period</li>
 				<li id="prereq_cdn" class="unknown">CDN is configured</li>
 				<li id="prereq_dns" class="unknown">DNS is configured</li>
