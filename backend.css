@@ -1,0 +1,50 @@
+/**
+ * Copyright (c) 2011 Arcostream
+ * Author 2011 W-Mark Kubacki
+ * 
+ * v1.0
+ */
+
+.side-by-side {
+	float: left;
+}
+#step1 {
+	display: block;
+	min-height: 5em;
+	min-width: 12em;
+}
+#step1 .alternative,
+#step1 .delimiter {
+	min-height: 5em;
+	min-width: 4em;
+	text-align: center;
+	vertical-align: middle;
+}
+#step1 hr {
+	clear: both;
+	visibility: hidden;
+}
+#step2 {
+	clear: left;
+}
+
+div.assistant {
+	margin: 0.2em 0 0 0;
+	padding-left: 24px;
+	background-image: url("img/arrowbar-down.png");
+	background-repeat: repeat-y;
+	background-position: bottom left;
+}
+
+ol.checks {
+	list-style-type: square;
+}
+ol.checks .unknown {
+	list-style-image: url("img/syncing.png");
+}
+ol.checks .failed {
+	list-style-image: url("img/failed.png");
+}
+ol.checks .success {
+	list-style-image: url("img/completed.png");
+}

@@ -40,9 +40,12 @@ function ossdl_off_menu() {
 	add_options_page('CDN Linker', 'CDN Linker', 8, __FILE__, 'ossdl_off_options');
 }
 
+function ossdl_off_get_basedir() {
+	return get_option('siteurl') . '/wp-content/plugins/' . basename(dirname(__FILE__));
+}
+
 function admin_register_head() {
-	$css_url = get_option('siteurl') . '/wp-content/plugins/' . basename(dirname(__FILE__));
-	$css_url .= '/backend.css';
+	$css_url = ossdl_off_get_basedir() . '/backend.css';
 	echo "<link rel=\"stylesheet\" type=\"text/css\" href=\"$css_url\" />\n";
 }
 
@@ -65,7 +68,7 @@ function ossdl_off_options() {
 					<input type="hidden" name="business" value="wordpress-cdn@arcostream.com">
 					<input type="hidden" name="currency_code" value="USD">
 					<input type="hidden" name="no_shipping" value="1">
-					<input type="image" src="http://www.paypal.com/en_US/i/btn/btn_subscribe_LG.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
+					<input type="image" src="<?php echo(ossdl_off_get_basedir()); ?>/img/paypal_subscribe.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
 					<input type="hidden" name="a3" value="2.99">
 					<input type="hidden" name="p3" value="1">
 					<input type="hidden" name="t3" value="M">
@@ -87,15 +90,12 @@ function ossdl_off_options() {
 		</div>
 		<div id="step2" class="assistant">
 			<ol class="checks">
-				<li id="prereq_account">account created</li>
-				<li id="prereq_payment">we have received your payment for the current period</li>
-				<li id="prereq_cdn">CDN is configured</li>
-				<li id="prereq_dns">DNS is configured</li>
-				<li id="prereq_status">loading from CDN in effect</li>
+				<li id="prereq_account" class="unknown">account created</li>
+				<li id="prereq_payment" class="unknown">payment for the current period</li>
+				<li id="prereq_cdn" class="unknown">CDN is configured</li>
+				<li id="prereq_dns" class="unknown">DNS is configured</li>
+				<li id="prereq_status" class="unknown">loading from CDN in effect</li>
 			</ol>
-		</div>
-		<div id="step3" class="assistant">
-			Status [STATUS IMAGE]
 		</div>
 
 		<h3>Advanced Options</h3>
