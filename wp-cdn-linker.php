@@ -48,10 +48,14 @@ function admin_register_head() {
 
 function ossdl_off_options() {
 	// handling of the 'advanced settings' input
-	if ( isset($_POST['action']) && ( $_POST['action'] == 'update_ossdl_off' )){
+	if ( isset($_POST['action']) && ( $_POST['action'] == 'advanced' )) {
 		update_option('ossdl_off_include_dirs', $_POST['ossdl_off_include_dirs'] == '' ? 'wp-content,wp-includes' : $_POST['ossdl_off_include_dirs']);
 		update_option('ossdl_off_exclude', $_POST['ossdl_off_exclude']);
 		update_option('ossdl_off_rootrelative', !!$_POST['ossdl_off_rootrelative']);
+	} else if ( isset($_POST['action']) && ( $_POST['action'] == 'advanced' )){
+		update_option('arcostream_custid', $_POST['arcostream_custid']);
+		// XXX: fetch configuration settings from mediator
+		// XXX: set them here
 	}
 
 	?><div class="wrap">
@@ -79,10 +83,13 @@ function ossdl_off_options() {
 				OR
 			</div>
 			<div class="alternative side-by-side">
+				<form method="post" action="">
 				<label for="arcostream_custid">Already a Subscriber?</label><br />
 				<input type="text" name="arcostream_custid" id="arcostream_custid" value="your customer ID" size="24" class="regular-text code" /><br />
 				<input type="reset" class="button-secondary" value="<?php _e('Clear and Reset') ?>" /> or
 				<input type="submit" class="button-primary" value="<?php _e('Configure') ?>" />
+				<input type="hidden" name="action" value="customerid" />
+				</form>
 			</div>
 		</div>
 		<div id="step2" class="assistant">
@@ -121,7 +128,7 @@ function ossdl_off_options() {
 				</td>
 			</tr>
 		</tbody></table>
-		<input type="hidden" name="action" value="update_ossdl_off" />
+		<input type="hidden" name="action" value="advanced" />
 		<p class="submit"><input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" /></p>
 		</form></p>
 	</div><?php
