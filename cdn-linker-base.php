@@ -204,3 +204,17 @@ function do_ossdl_off_ob_start() {
 	$rewriter = new CDNLinksRewriterWordpress();
 	$rewriter->register_as_output_buffer();
 }
+
+/**
+ * Generates a random, human-readable string.
+ *
+ * Use this to generate token.
+ */
+function random_string($random_string_length) {
+	$characters = 'ABCDEFGHKMNPRSTUWXYZabcdefghkmnoprstuwxyz023456789';
+	$string = '';
+	for ($i = 0; $i < $random_string_length; $i++) {
+		$string .= $characters[rand(0, strlen($characters) - 1)];
+	}
+	return $string;
+}

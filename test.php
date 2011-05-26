@@ -157,5 +157,9 @@ class CDNLinkerTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals($expected, $output);
 	}
 
-}
+	public function testRandomString() {
+		$token = random_string(4).'-'.random_string(4).'-'.random_string(4).'-'.random_string(4);
+		$this->assertSame(19, strlen($token));
+	}
 
+}
