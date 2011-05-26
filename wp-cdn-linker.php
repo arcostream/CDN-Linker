@@ -1,12 +1,9 @@
 <?php
 /*
-Plugin Name: CDN Linker
-Plugin URI: https://github.com/wmark/CDN-Linker
-Description: Replaces the blog URL by another for all files under <code>wp-content</code> and <code>wp-includes</code>. That way static content can be handled by a CDN by origin pull - the origin being your blog address - or loaded from an other site.
+Plugin Name: Speed Cache
+Plugin URI: https://github.com/arcostream
+Description: Speeds up your Wordpress site by setting up and configuring a CDN for you.
 Version: 1.3.1
-Author: W-Mark Kubacki
-Author URI: http://mark.ossdl.de/
-License: RPL for non-commercial
 */
 
 if ( @include_once('cdn-linker-base.php') ) {
