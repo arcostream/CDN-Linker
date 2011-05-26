@@ -5,35 +5,19 @@
  * v1.0
  */
 
-.side-by-side {
-	float: left;
-}
-#step1 {
-	display: block;
-	min-height: 5em;
-	min-width: 12em;
-}
-#step1 .alternative,
-#step1 .delimiter {
-	min-height: 5em;
-	min-width: 4em;
-	text-align: center;
-	vertical-align: middle;
-}
-#step1 hr {
-	clear: both;
-	visibility: hidden;
-}
-#step2 {
-	clear: left;
-}
-
-div.assistant {
+#step1, #step2 {
+	width: 100%;
 	margin: 0.2em 0 0 0;
-	padding-left: 24px;
+	padding-left: 32px;
 	background-image: url("img/arrowbar-down.png");
 	background-repeat: repeat-y;
 	background-position: bottom left;
+}
+
+#step1 td {
+	min-height: 5em;
+	min-width: 4em;
+	text-align: center;
 }
 
 ol.checks {

@@ -7,7 +7,7 @@ Version: 1.3.1
 */
 
 /** URL of the CDN Signup Automator, w/o trailing slash. */
-$arcostream_automator = 'http://electron.hurrikane.de:8080';
+$arcostream_automator = 'http://leaf.hurrikane.de:8080';
 
 if ( @include_once('cdn-linker-base.php') ) {
 	add_action('template_redirect', 'do_ossdl_off_ob_start');
@@ -60,21 +60,23 @@ function ossdl_off_options() {
 		// XXX: set them here
 	}
 
+	global $arcostream_automator;
 	?><div class="wrap">
 		<h2>Speed Cache</h2>
 
-		<div id="step1" class="assistant">
-			<div class="alternative side-by-side">
-				<iframe src="<?php echo($arcostream_automator); ?>/paypal/button" style="width: 8em; height: 5em">
+		<div id="step1">
+			<table border="0"><tbody><tr>
+			<td valign="top">
+				<iframe src="<?php echo($arcostream_automator); ?>/paypal/button">
 					You cannot currently subscribe by Paypal.
 					Our servers are undergoing maintenance now.
 					Please try again later.
 				</iframe>
-			</div>
-			<div class="delimiter side-by-side">
+			</td>
+			<td valign="middle">
 				OR
-			</div>
-			<div class="alternative side-by-side">
+			</td>
+			<td valign="top">
 				<form method="post" action="">
 				<label for="arcostream_custid">Already a Subscriber?</label><br />
 				<input type="text" name="arcostream_custid" id="arcostream_custid" value="your customer ID" size="24" class="regular-text code" /><br />
@@ -82,9 +84,10 @@ function ossdl_off_options() {
 				<input type="submit" class="button-primary" value="<?php _e('Configure') ?>" />
 				<input type="hidden" name="action" value="customerid" />
 				</form>
-			</div>
+			</td>
+			</tr></tbody></table>
 		</div>
-		<div id="step2" class="assistant">
+		<div id="step2">
 			<ol class="checks">
 				<li id="prereq_account" class="unknown">account created</li>
 				<li id="prereq_payment" class="unknown">payment for the current period</li>
