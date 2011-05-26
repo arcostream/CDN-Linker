@@ -6,6 +6,9 @@ Description: Speeds up your Wordpress site by setting up and configuring a CDN f
 Version: 1.3.1
 */
 
+/** URL of the CDN Signup Automator, w/o trailing slash. */
+$arcostream_automator = 'http://electron.hurrikane.de:8080';
+
 if ( @include_once('cdn-linker-base.php') ) {
 	add_action('template_redirect', 'do_ossdl_off_ob_start');
 }
@@ -26,15 +29,14 @@ function ossdl_off_deactivate() {
 	delete_option('ossdl_off_exclude');
 	delete_option('ossdl_off_rootrelative');
 }
-// register_deactivation_hook( __FILE__, 'ossdl_off_deactivate');
-// Deactivated because: If the user activated this plugin again his previous settings would have been deleted by function.
+register_deactivation_hook( __FILE__, 'ossdl_off_deactivate');
 
 /********** WordPress Interface ********/
 add_action('admin_menu', 'ossdl_off_menu');
 add_action('admin_head', 'admin_register_head');
 
 function ossdl_off_menu() {
-	add_options_page('CDN Linker', 'CDN Linker', 8, __FILE__, 'ossdl_off_options');
+	add_options_page('Speed Cache', 'Speed Cache', 8, __FILE__, 'ossdl_off_options');
 }
 
 function ossdl_off_get_basedir() {
@@ -63,21 +65,11 @@ function ossdl_off_options() {
 
 		<div id="step1" class="assistant">
 			<div class="alternative side-by-side">
-				Subscribe by Paypal
-				<form name="_xclick" action="https://www.paypal.com/cgi-bin/webscr" method="post">
-					<input type="hidden" name="cmd" value="_xclick-subscriptions">
-					<input type="hidden" name="business" value="wordpress-cdn@arcostream.com">
-					<input type="hidden" name="currency_code" value="USD">
-					<input type="hidden" name="no_shipping" value="1">
-					<input type="image" src="<?php echo(ossdl_off_get_basedir()); ?>/img/paypal_subscribe.gif" border="0" name="submit" alt="Make payments with PayPal - it's fast, free and secure!">
-					<input type="hidden" name="a3" value="2.99">
-					<input type="hidden" name="p3" value="1">
-					<input type="hidden" name="t3" value="M">
-					<input type="hidden" name="src" value="1">
-					<input type="hidden" name="sra" value="1">
-				</form>
-				2.99 USD per month &mdash;
-				click here for details
+				<iframe src="<?php echo($arcostream_automator); ?>/paypal/button" style="width: 8em; height: 5em">
+					You cannot currently subscribe by Paypal.
+					Our servers are undergoing maintenance now.
+					Please try again later.
+				</iframe>
 			</div>
 			<div class="delimiter side-by-side">
 				OR
