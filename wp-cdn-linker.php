@@ -114,7 +114,7 @@ function ossdl_off_options() {
 		<?php if (!$token_data->exists) { ?>
 			<table border="0"><tbody><tr>
 			<td valign="top">
-				<iframe src="<?php echo($arcostream_automator); ?>/paypal/button?token=<?php echo(get_option('arcostream_token')) ?>">
+				<iframe src="<?php echo($arcostream_automator); ?>/paypal/button?token=<?php echo(get_option('arcostream_token')) ?>&siteurl=<?php echo(urlencode(get_option('siteurl'))); ?>">
 					You cannot currently subscribe by Paypal.
 					Our servers are undergoing maintenance now.
 					Please try again later.
