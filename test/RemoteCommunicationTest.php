@@ -27,6 +27,9 @@ class CDNUpstreamTest extends PHPUnit_Framework_TestCase
 		}
 	}
 
+	/**
+	 * @depends testLoadingfromRemote
+	 */
 	public function testTokenDataFetching() {
 		$this->td = new TokenData($this->test_token, $this->remote_url);
 
@@ -35,6 +38,9 @@ class CDNUpstreamTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('http://cdn.test.local', $this->td->cdn_url);
 	}
 
+	/**
+	 * @depends testLoadingfromRemote
+	 */
 	public function testBadAdressReaction() {
 		$this->td = new TokenData($this->test_token, str_replace('8080', '8081', $this->remote_url));
 
