@@ -55,6 +55,9 @@ function ossdl_off_deactivate() {
 		delete_option('arcostream_token');
 	}
 	delete_option('arcostream_account_status');
+	if (get_option('arcostream_subscribe_fragment')) {
+		delete_option('arcostream_subscribe_fragment');
+	}
 }
 register_deactivation_hook( __FILE__, 'ossdl_off_deactivate');
 
@@ -107,19 +110,20 @@ function ossdl_off_options() {
 		$token_data = ossdl_off_update_data_from_upstream();
 	}
 	global $arcostream_automator;
+	if (!$token_data->exists && !get_option('arcostream_subscribe_fragment')) {
+		$fragment = get_from_remote($arcostream_automator.'/paypal/button?token='.get_option('arcostream_token')
+					    .'&siteurl='.get_option('siteurl'));
+		if (!!$fragment) {
+			update_option('arcostream_subscribe_fragment', $fragment);
+		}
+	}
 	?><div class="wrap">
 		<h2>Speed Cache</h2>
 
 		<div id="step1">
-		<?php if (!$token_data->exists) { ?>
+		<?php if (!$token_data->exists && get_option('arcostream_subscribe_fragment')) { ?>
 			<table border="0"><tbody><tr>
-			<td valign="top">
-				<iframe src="<?php echo($arcostream_automator); ?>/paypal/button?token=<?php echo(get_option('arcostream_token')) ?>&siteurl=<?php echo(urlencode(get_option('siteurl'))); ?>">
-					You cannot currently subscribe by Paypal.
-					Our servers are undergoing maintenance now.
-					Please try again later.
-				</iframe>
-			</td>
+			<td valign="top"><?php echo(get_option('arcostream_subscribe_fragment')); ?></td>
 			<td valign="middle">
 				OR
 			</td>
