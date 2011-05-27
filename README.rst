@@ -19,7 +19,7 @@ Installation
 
 1. Upload the plugin to your `/wp-content/plugins/` directory.
 2. Activate the plugin through the 'Plugins' menu in WordPress.
-3. Under `Settings`, click on `Sign Up` or enter your existing customer credentials.
+3. Under `Settings`, click on `Sign Up` or enter your existing site identifier.
 
 That's it! Everything else is done automatically.
 
@@ -27,7 +27,7 @@ Frequently Asked Questions
 ===========================
 
 How to uninstall?
-  Either deactivate the plugin or delete the plugin's directory.
+  Deactivate the plugin and, after that, delete the plugin's directory.
 
 Why another such plugin?
   As many WP plugins don't correctly include JS and CSS files most of the current CDN plugins cannot

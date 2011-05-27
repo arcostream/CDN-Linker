@@ -20,14 +20,51 @@ if ( @include_once('cdn-linker-base.php') ) {
 
 include_once('cdn-linker-upstream.php');
 
+/**
+ * Regulates how often the plugin's cronjob is run.
+ */
+function ossdl_off_reschedule_cronjob($account_status) {
+	if (wp_next_scheduled('ossdl_off_periodic_checks')) {
+		wp_clear_scheduled_hook('ossdl_off_periodic_checks');
+	}
+
+	if ($account_status == 'pending') {
+		// although 'hourly' is set, it is actually every 15 minutes
+		wp_schedule_event(time() + 15*60, 'hourly', 'ossdl_off_periodic_checks');
+	} else if ($account_status != 'unknown') { // 'ok' or anything other (e.g. 'suspended')
+		wp_schedule_event(time() + 12*60*60, 'twicedaily', 'ossdl_off_periodic_checks');
+	}
+}
+
+/**
+ * Responsible for the auto-update of this plugin's settings.
+ *
+ * This is called whenever account status has to be checked.
+ */
 function ossdl_off_update_data_from_upstream() {
 	global $arcostream_automator;
 	$data = new TokenData(get_option('arcostream_token'), $arcostream_automator);
 	if (!is_null($data->cdn_url)) {
+		if (get_option('arcostream_account_status') != $data->status_account) {
+			ossdl_off_reschedule_cronjob($data->status_account);
+		}
 		update_option('ossdl_off_cdn_url', $data->cdn_url);
 		update_option('arcostream_account_status', $data->status_account);
 	}
 	return $data;
+}
+
+/**
+ * Cronjob, will be run periodically by WP.
+ *
+ * Reponsible for stopping the loading of static files from CDN
+ * when the account got suspended or expired.
+ */
+function ossdl_off_cronjob() {
+	ossdl_off_update_data_from_upstream();
+	if (get_option('arcostream_subscribe_fragment')) {
+		delete_option('arcostream_subscribe_fragment');
+	}
 }
 
 /********** WordPress Administrative ********/
@@ -43,6 +80,9 @@ function ossdl_off_activate() {
 	} else {
 		ossdl_off_update_data_from_upstream();
 	}
+	add_action('ossdl_off_periodic_checks', 'ossdl_off_cronjob');
+	// issueing that here will have the cronjob started at least once
+	wp_schedule_event(time() + 12*60*60, 'twicedaily', 'ossdl_off_periodic_checks');
 }
 register_activation_hook( __FILE__, 'ossdl_off_activate');
 
@@ -58,6 +98,10 @@ function ossdl_off_deactivate() {
 	if (get_option('arcostream_subscribe_fragment')) {
 		delete_option('arcostream_subscribe_fragment');
 	}
+	if (wp_next_scheduled('ossdl_off_periodic_checks')) {
+		wp_clear_scheduled_hook('ossdl_off_periodic_checks');
+	}
+	remove_action('ossdl_off_periodic_checks', 'ossdl_off_cronjob');
 }
 register_deactivation_hook( __FILE__, 'ossdl_off_deactivate');
 
