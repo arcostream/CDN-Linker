@@ -20,8 +20,6 @@ if ( @include_once('cdn-linker-base.php') ) {
 
 include_once('cdn-linker-upstream.php');
 
-/********** WordPress Administrative ********/
-
 function ossdl_off_update_data_from_upstream() {
 	global $arcostream_automator;
 	$data = new TokenData(get_option('arcostream_token'), $arcostream_automator);
@@ -31,6 +29,8 @@ function ossdl_off_update_data_from_upstream() {
 	}
 	return $data;
 }
+
+/********** WordPress Administrative ********/
 
 function ossdl_off_activate() {
 	add_option('ossdl_off_cdn_url', get_option('siteurl'));
