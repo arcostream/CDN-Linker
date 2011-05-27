@@ -28,9 +28,9 @@ class TokenData
 	/** String: status of the account - 'ok', 'cancelled' */
 	var status_account	= null;
 	/** String: the DNS CNAME - also known as $cdn_url */
-	var cdn_url		= null;
-	/** ISO 8859-1 formatted datetime */
-	var paid_including	= null;
+	var $cdn_url		= null;
+	/** ISO 8601 formatted datetime (see also DIN 1355-1:2006) */
+	var $paid_including	= null;
 	/** timezone of 'paid_including' */
 	var paid_timezone	= null;
 
