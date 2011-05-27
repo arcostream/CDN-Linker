@@ -48,6 +48,18 @@ function hash_from_json($str) {
 }
 
 /**
+ * Generates a random token for Arcostream services.
+ *
+ * That token identifies a customer/site combination.
+ * More specifically, it is linked to a single CDN bucker and its CNAME.
+ *
+ * @return String random token. between 19 and 24 characters long
+ */
+function generate_random_token() {
+	return random_string(4).'-'.random_string(4).'-'.random_string(4).'-'.random_string(4);
+}
+
+/**
  * Represents a customer/token combination.
  *
  * Use this to get account validity and settings from the CDN Signup Automator.
@@ -96,7 +108,7 @@ class TokenData
 	protected function populate() {
 		$j = $this->get_data_from_upstream();
 
-		if (!$j) {
+		if (!$j || $j['status']['account'] == 'unknown') {
 			$this->exists = false;
 			$this->status_cdn = false;
 			$this->status_dns = false;

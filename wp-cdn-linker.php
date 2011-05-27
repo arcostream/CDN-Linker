@@ -39,7 +39,7 @@ function ossdl_off_activate() {
 	add_option('ossdl_off_rootrelative', '');
 	add_option('arcostream_account_status', 'unknown');
 	if (!get_option('arcostream_token')) {
-		add_option('arcostream_token', random_string(4).'-'.random_string(4).'-'.random_string(4).'-'.random_string(4));
+		add_option('arcostream_token', generate_random_token());
 	} else {
 		ossdl_off_update_data_from_upstream();
 	}
@@ -88,13 +88,19 @@ function ossdl_off_class_for_status($status) {
 function ossdl_off_options() {
 	$token_data = false;
 	// handling of the 'advanced settings' input
-	if ( isset($_POST['action']) && ( $_POST['action'] == 'advanced' )) {
+	if ( isset($_POST['action']) ) switch ($_POST['action']) {
+	case 'advanced':
 		update_option('ossdl_off_include_dirs', $_POST['ossdl_off_include_dirs'] == '' ? 'wp-content,wp-includes' : $_POST['ossdl_off_include_dirs']);
 		update_option('ossdl_off_exclude', $_POST['ossdl_off_exclude']);
 		update_option('ossdl_off_rootrelative', !!$_POST['ossdl_off_rootrelative']);
-	} else if ( isset($_POST['action']) && ( $_POST['action'] == 'token' )){
+		break;
+	case 'clear token':
+		update_option('arcostream_token', generate_random_token());
+		update_option('arcostream_account_status', 'unknown');
+		break;
+	case 'new token':
 		update_option('arcostream_token', $_POST['arcostream_token']);
-		$token_data = ossdl_off_update_data_from_upstream();
+		break;
 	}
 
 	if (!$token_data) {
@@ -122,14 +128,16 @@ function ossdl_off_options() {
 				<form method="post" action="">
 				<?php if (get_option('arcostream_account_status') == 'ok') { ?>
 					<label for="arcostream_custid">Your site identifier:</label><br />
-					<input type="text" name="arcostream_custid" id="arcostream_token" value="<?php echo($token_data->token); ?>" disabled="1" size="24" class="regular-text code" />
+					<input type="text" name="arcostream_custid" id="arcostream_token" value="<?php echo($token_data->token); ?>" disabled="1" size="24" class="regular-text code" /><br />
+					<input type="hidden" name="action" value="clear token" />
+					<input type="submit" class="button-secondary" value="<?php _e('Clear and Unconfigure') ?>" />
 				<?php } else { ?>
 					<label for="arcostream_custid">Already a Subscriber?</label><br />
-					<input type="text" name="arcostream_custid" id="arcostream_token" value="your site identifier" size="24" class="regular-text code" />
+					<input type="text" name="arcostream_token" id="arcostream_token" value="your site identifier" size="24" class="regular-text code" /><br />
+					<input type="hidden" name="action" value="new token" />
+					<input type="reset" class="button-secondary" value="<?php _e('Clear') ?>" /> &mdash;
+					<input type="submit" class="button-primary" value="<?php _e('Configure') ?>" />
 				<?php } ?><br />
-				<input type="reset" class="button-secondary" value="<?php _e('Clear and Reset') ?>" /> or
-				<input type="submit" class="button-primary" value="<?php _e('Configure') ?>" />
-				<input type="hidden" name="action" value="token" />
 				</form>
 			</td>
 			</tr></tbody></table>
