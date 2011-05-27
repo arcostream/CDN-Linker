@@ -16,6 +16,17 @@ class CDNUpstreamTest extends PHPUnit_Framework_TestCase
 	/** Token for testing. */
 	var $test_token = 'TEST-TEST-TEST-TEST';
 
+	public function testLoadingfromRemote() {
+		foreach(array(true, false) as $force_fopen) {
+			$str = get_from_remote($this->remote_url.'/status/'.$this->test_token, $force_fopen);
+			$this->assertTrue(!!$str);
+			$this->assertContains('status', $str);
+
+			$str = get_from_remote($this->remote_url.'/will-yield-404', $force_fopen);
+			$this->assertFalse(!!$str);
+		}
+	}
+
 	public function testTokenDataFetching() {
 		$this->td = new TokenData($this->test_token, $this->remote_url);
 

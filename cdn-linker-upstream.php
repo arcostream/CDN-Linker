@@ -6,6 +6,48 @@ if (!function_exists('json_decode')) {
 }
 
 /**
+ * Gets data from a remote location.
+ *
+ * @return String or Boolean false if fetching failed
+ */
+function get_from_remote($url, $force_fopen = false) {
+	$raw = '';
+	if (function_exists('curl_init') && !$force_fopen) {
+		$c = curl_init();
+		curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+		curl_setopt($c, CURLOPT_URL, $url);
+		$raw = curl_exec($c);
+		if (curl_getinfo($c, CURLINFO_HTTP_CODE) != 200) {
+			$raw = false;
+		}
+		curl_close($c);
+	} else {
+		assert(ini_get('allow_url_fopen'));
+		$ctx = stream_context_create(array('http' => array('timeout' => 2),
+						   'https' => array('timeout' => 3)
+						   ));
+		$raw = @file_get_contents($url, 0, $ctx);
+	}
+
+	if (function_exists('mb_convert_encoding')) {
+		$from_encoding = mb_detect_encoding($raw, 'UTF-8, ISO-8859-1', true);
+		$raw = mb_convert_encoding($raw, 'UTF-8', $from_encoding);
+	}
+
+	return $raw;
+}
+
+/** Decodes a JSON string. */
+function hash_from_json($str) {
+	if (function_exists('json_decode')) {
+		return json_decode($str, true);
+	} else {
+		$json_obj = new Moxiecode_JSON();
+		return $json_obj->decode($str);
+	}
+}
+
+/**
  * Represents a customer/token combination.
  *
  * Use this to get account validity and settings from the CDN Signup Automator.
@@ -22,17 +64,17 @@ class TokenData
 	// settings, if set by the Automator (else NULL)
 
 	/** Boolean: true if a CDN bucket has been create for this customer/token */
-	var status_cdn		= null;
+	var $status_cdn		= null;
 	/** Boolean: true if DNS CNAME has been created */
-	var status_dns		= null;
+	var $status_dns		= null;
 	/** String: status of the account - 'ok', 'cancelled' */
-	var status_account	= null;
+	var $status_account	= null;
 	/** String: the DNS CNAME - also known as $cdn_url */
 	var $cdn_url		= null;
 	/** ISO 8601 formatted datetime (see also DIN 1355-1:2006) */
 	var $paid_including	= null;
 	/** timezone of 'paid_including' */
-	var paid_timezone	= null;
+	var $paid_timezone	= null;
 
 	function __construct($token, $automator_url) {
 		$this->token = $token;
@@ -41,42 +83,36 @@ class TokenData
 		$this->populate();
 	}
 
-	// XXX: raise exception if something goes wrong or if the token is invalid
 	protected function get_data_from_upstream() {
-		$raw = file_get_contents($upstream);
-
-		if (function_exists('json_decode')) {
-			return json_decode($raw);
-		} else {
-			$json_obj = new Moxiecode_JSON();
-			return $json_obj->decode($raw);
+		$raw = get_from_remote($this->upstream.'/status/'.$this->token);
+		if (!!$raw && strstr($raw, 'status')) {
+			return hash_from_json($raw);
 		}
+		return $raw;
 	}
 
-	// XXX: handle exceptions, set data accordingly
 	protected function populate() {
 		$j = $this->get_data_from_upstream();
 
-		$this->exists = true;
-		if ( isset($j['cdn_url']) ) {
-			$this->cdn_url = $j['cdn_url'];
-		}
-
-		if ( isset($j['status']) ) {
-			$this->status_cdn = $j['status']['cdn'];
-			$this->status_dns = $j['status']['dns'];
-			$this->status_dns = $j['status']['account'];
-		} else {
+		if (!$j) {
+			$this->exists = false;
 			$this->status_cdn = false;
 			$this->status_dns = false;
 			$this->status_account = 'unknown';
-		}
-
-		if ( isset($j['paid']) ) {
-			$this->paid_including = $j['paid']['including'];
-			$this->paid_timezone = $j['paid']['timezone'];
-		} else {
 			$this->paid_including = false;
+		} else {
+			$this->exists = true;
+			$this->cdn_url = $j['cdn_url'];
+			$this->status_cdn = $j['status']['cdn'];
+			$this->status_dns = $j['status']['dns'];
+			$this->status_account = $j['status']['account'];
+
+			if ( isset($j['paid']) ) {
+				$this->paid_including = $j['paid']['including'];
+				$this->paid_timezone = $j['paid']['timezone'];
+			} else {
+				$this->paid_including = false;
+			}
 		}
 	}
 
