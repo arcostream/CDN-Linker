@@ -97,11 +97,15 @@ function ossdl_off_options() {
 		$token_data = ossdl_off_update_data_from_upstream();
 	}
 
+	if (!$token_data) {
+		$token_data = ossdl_off_update_data_from_upstream();
+	}
 	global $arcostream_automator;
 	?><div class="wrap">
 		<h2>Speed Cache</h2>
 
 		<div id="step1">
+		<?php if (!$token_data->exists) { ?>
 			<table border="0"><tbody><tr>
 			<td valign="top">
 				<iframe src="<?php echo($arcostream_automator); ?>/paypal/button?token=<?php echo(get_option('arcostream_token')) ?>">
@@ -113,10 +117,16 @@ function ossdl_off_options() {
 			<td valign="middle">
 				OR
 			</td>
+		<?php } ?>
 			<td valign="top">
 				<form method="post" action="">
-				<label for="arcostream_custid">Already a Subscriber?</label><br />
-				<input type="text" name="arcostream_custid" id="arcostream_token" value="your secret token" size="24" class="regular-text code" /><br />
+				<?php if (get_option('arcostream_account_status') == 'ok') { ?>
+					<label for="arcostream_custid">Your site identifier:</label><br />
+					<input type="text" name="arcostream_custid" id="arcostream_token" value="<?php echo($token_data->token); ?>" disabled="1" size="24" class="regular-text code" />
+				<?php } else { ?>
+					<label for="arcostream_custid">Already a Subscriber?</label><br />
+					<input type="text" name="arcostream_custid" id="arcostream_token" value="your site identifier" size="24" class="regular-text code" />
+				<?php } ?><br />
 				<input type="reset" class="button-secondary" value="<?php _e('Clear and Reset') ?>" /> or
 				<input type="submit" class="button-primary" value="<?php _e('Configure') ?>" />
 				<input type="hidden" name="action" value="token" />
@@ -126,11 +136,28 @@ function ossdl_off_options() {
 		</div>
 		<div id="step2">
 			<ol class="checks">
-				<li id="prereq_account" class="<?php echo(ossdl_off_class_for_status($token_data->exists)); ?>">account created</li>
-				<li id="prereq_payment" class="unknown">payment for the current period</li>
-				<li id="prereq_cdn" class="unknown">CDN is configured</li>
-				<li id="prereq_dns" class="unknown">DNS is configured</li>
-				<li id="prereq_status" class="unknown">loading from CDN in effect</li>
+			<?php if (!$token_data->exists) { ?>
+				<li id="prereq_account" class="failed">Your account has been created.</li>
+				<li id="prereq_payment" class="unknown">We have received payment for the current period.</li>
+				<li id="prereq_cdn" class="unknown">CDN is configured.</li>
+				<li id="prereq_dns" class="unknown">DNS is configured.</li>
+				<li id="prereq_status" class="unknown">Loading of static data from CDN is in effect.</li>
+			<?php } else /* account exists */ { ?>
+				<li id="prereq_account" class="<?php echo(ossdl_off_class_for_status($token_data->exists)); ?>">
+					Your account status is <code><q><?php echo(get_option('arcostream_account_status')); ?></q></code>.
+				</li>
+				<li id="prereq_payment" class="<?php echo(ossdl_off_class_for_status($token_data->status_account)); ?>">
+					The subscription is paid up to <?php echo(substr($token_data->paid_including, 0, 10).' '.$token_data->paid_timezone); ?>.
+					<?php if ($token_data->last_period) { ?>Your subscription will expire after that.<?php } ?>
+				</li>
+				<li id="prereq_cdn" class="<?php echo(ossdl_off_class_for_status($token_data->status_cdn)); ?>">CDN is configured.</li>
+				<li id="prereq_dns" class="<?php echo(ossdl_off_class_for_status($token_data->status_dns)); ?>">
+					DNS is configured and your CDN available through <code><?php echo(str_replace('http://', '', $token_data->cdn_url)); ?></code>.
+				</li>
+				<li id="prereq_status" class="<?php
+					echo(ossdl_off_class_for_status(get_option('arcostream_account_status') == 'ok' && $token_data->status_cdn && $token_data->status_dns));
+					?>">Loading of static data from CDN is in effect.</li>
+			<?php } ?>
 			</ol>
 		</div>
 

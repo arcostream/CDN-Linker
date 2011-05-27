@@ -75,6 +75,8 @@ class TokenData
 	var $paid_including	= null;
 	/** timezone of 'paid_including' */
 	var $paid_timezone	= null;
+	/** Boolean: true if the account expires after the date, e.g. the user doesn't want it to renew */
+	var $last_period	= null;
 
 	function __construct($token, $automator_url) {
 		$this->token = $token;
@@ -110,6 +112,7 @@ class TokenData
 			if ( isset($j['paid']) ) {
 				$this->paid_including = $j['paid']['including'];
 				$this->paid_timezone = $j['paid']['timezone'];
+				$this->last_period = $j['paid']['last_period'];
 			} else {
 				$this->paid_including = false;
 			}
