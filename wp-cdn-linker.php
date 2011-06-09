@@ -157,6 +157,12 @@ function ossdl_off_options() {
 	if (!$token_data->exists && !get_option('arcostream_subscribe_fragment')) {
 		$fragment = get_from_remote($arcostream_automator.'/paypal/button?token='.get_option('arcostream_token')
 					    .'&siteurl='.get_option('siteurl'));
+		if (!!$fragment && strstr($fragment, 'SITE/TOKEN MISMATCH')) {
+			update_option('arcostream_token', generate_random_token());
+			$fragment = get_from_remote($arcostream_automator.'/paypal/button?token='.get_option('arcostream_token')
+				    .'&siteurl='.get_option('siteurl'));
+			$token_data = ossdl_off_update_data_from_upstream();
+		}
 		if (!!$fragment) {
 			update_option('arcostream_subscribe_fragment', $fragment);
 		}

@@ -17,7 +17,8 @@ function get_from_remote($url, $force_fopen = false) {
 		curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
 		curl_setopt($c, CURLOPT_URL, $url);
 		$raw = curl_exec($c);
-		if (curl_getinfo($c, CURLINFO_HTTP_CODE) != 200) {
+		$http_response_code = curl_getinfo($c, CURLINFO_HTTP_CODE);
+		if (!(200 <= $http_response_code && $http_response_code <= 206)) {
 			$raw = false;
 		}
 		curl_close($c);
