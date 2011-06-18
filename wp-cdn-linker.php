@@ -155,12 +155,12 @@ function ossdl_off_options() {
 	}
 	global $arcostream_automator;
 	if (!$token_data->exists && !get_option('arcostream_subscribe_fragment')) {
-		$fragment = get_from_remote($arcostream_automator.'/paypal/button?token='.get_option('arcostream_token')
-					    .'&siteurl='.get_option('siteurl'));
+		$signup_fragment_url = $arcostream_automator.'/plan/1/wp-button?token='.get_option('arcostream_token')
+					.'&siteurl='.get_option('siteurl');
+		$fragment = get_from_remote($signup_fragment_url);
 		if (!!$fragment && strstr($fragment, 'SITE/TOKEN MISMATCH')) {
 			update_option('arcostream_token', generate_random_token());
-			$fragment = get_from_remote($arcostream_automator.'/paypal/button?token='.get_option('arcostream_token')
-				    .'&siteurl='.get_option('siteurl'));
+			$fragment = get_from_remote($signup_fragment_url);
 			$token_data = ossdl_off_update_data_from_upstream();
 		}
 		if (!!$fragment) {
