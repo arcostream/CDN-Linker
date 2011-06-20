@@ -133,7 +133,6 @@ function ossdl_off_class_for_status($status) {
 }
 
 function ossdl_off_options() {
-	$token_data = false;
 	// handling of the 'advanced settings' input
 	if ( isset($_POST['action']) ) switch ($_POST['action']) {
 	case 'advanced':
@@ -150,11 +149,10 @@ function ossdl_off_options() {
 		break;
 	}
 
-	if (!$token_data) {
-		$token_data = ossdl_off_update_data_from_upstream();
-	}
+	$token_data = ossdl_off_update_data_from_upstream();
 	global $arcostream_automator;
-	if (!$token_data->exists && !get_option('arcostream_subscribe_fragment')) {
+	if (get_option('arcostream_account_status') != 'ok'
+	    && !$token_data->exists && !get_option('arcostream_subscribe_fragment')) {
 		$signup_fragment_url = $arcostream_automator.'/plan/1/wp-button?token='.get_option('arcostream_token')
 					.'&siteurl='.get_option('siteurl');
 		$fragment = get_from_remote($signup_fragment_url);
@@ -171,7 +169,8 @@ function ossdl_off_options() {
 		<h2>Speed Cache</h2>
 
 		<div id="step1">
-		<?php if (!$token_data->exists && get_option('arcostream_subscribe_fragment')) { ?>
+		<?php if (get_option('arcostream_account_status') != 'ok'
+			  && !$token_data->exists && get_option('arcostream_subscribe_fragment')) { ?>
 			<table border="0"><tbody><tr>
 			<td valign="top"><?php echo(get_option('arcostream_subscribe_fragment')); ?></td>
 			<td valign="middle">
@@ -198,13 +197,13 @@ function ossdl_off_options() {
 		</div>
 		<div id="step2">
 			<ol class="checks">
-			<?php if (!$token_data->exists) { ?>
+			<?php if (get_option('arcostream_account_status') != 'ok' && !$token_data->exists) { ?>
 				<li id="prereq_account" class="failed">Your account has been created.</li>
 				<li id="prereq_payment" class="unknown">We have received payment for the current period.</li>
 				<li id="prereq_cdn" class="unknown">CDN is configured.</li>
 				<li id="prereq_dns" class="unknown">DNS is configured.</li>
 				<li id="prereq_status" class="unknown">Loading of static data from CDN is in effect.</li>
-			<?php } else /* account exists */ { ?>
+			<?php } else if ($token_data->exists) { ?>
 				<li id="prereq_account" class="<?php echo(ossdl_off_class_for_status($token_data->exists)); ?>">
 					Your account status is <code><q><?php echo(get_option('arcostream_account_status')); ?></q></code>.
 				</li>
@@ -217,7 +216,15 @@ function ossdl_off_options() {
 					DNS is configured and your CDN available through <code><?php echo(str_replace('http://', '', $token_data->cdn_url)); ?></code>.
 				</li>
 				<li id="prereq_status" class="<?php
-					echo(ossdl_off_class_for_status(get_option('arcostream_account_status') == 'ok' && $token_data->status_cdn && $token_data->status_dns));
+					echo(ossdl_off_class_for_status(get_option('arcostream_account_status') == 'ok' && $token_data->cdn_url));
+					?>">Loading of static data from CDN is in effect.</li>
+			<?php } else /* no token_data->exists (for example, most likely upstream is down) */ { ?>
+				<li id="prereq_account" class="unknown">
+					Your account status is <code><q><?php echo(get_option('arcostream_account_status')); ?></q></code>.
+					(Read from cache.)
+				</li>
+				<li id="prereq_status" class="<?php
+					echo(ossdl_off_class_for_status(get_option('arcostream_account_status') == 'ok' && get_option('ossdl_off_cdn_url') ));
 					?>">Loading of static data from CDN is in effect.</li>
 			<?php } ?>
 			</ol>
