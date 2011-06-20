@@ -109,7 +109,7 @@ class TokenData
 	protected function populate() {
 		$j = $this->get_data_from_upstream();
 
-		if (!$j || $j['status']['account'] == 'unknown') {
+		if (!$j || !isset($j['status'])) {
 			$this->exists = false;
 			$this->status_cdn = false;
 			$this->status_dns = false;

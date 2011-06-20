@@ -44,7 +44,7 @@ function ossdl_off_reschedule_cronjob($account_status) {
 function ossdl_off_update_data_from_upstream() {
 	global $arcostream_automator;
 	$data = new TokenData(get_option('arcostream_token'), $arcostream_automator);
-	if (!is_null($data->cdn_url)) {
+	if ($data->exists) {
 		if (get_option('arcostream_account_status') != $data->status_account) {
 			ossdl_off_reschedule_cronjob($data->status_account);
 		}
