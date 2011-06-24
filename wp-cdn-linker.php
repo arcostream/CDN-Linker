@@ -3,7 +3,7 @@
 Plugin Name: Speed Cache
 Plugin URI: https://github.com/arcostream
 Description: Speeds up your Wordpress site by setting up and configuring a CDN for you.
-Version: 2.0.1
+Version: 2.0.2
 */
 
 /**
@@ -211,6 +211,12 @@ function ossdl_off_options() {
 					The subscription is paid up to <?php echo(substr($token_data->paid_including, 0, 10).' '.$token_data->paid_timezone); ?>.
 					<?php if ($token_data->last_period) { ?>Your subscription will expire after that.<?php } ?>
 				</li>
+				<?php if ($token_data->traffic_used) { ?>
+				<li id="prereq_quota" class="<?php echo(ossdl_off_class_for_status($token_data->traffic_used)); ?>">
+					You have used <?php echo($token_data->traffic_used); ?> MB of your plan.
+					The latter limits you to <code><q><?php echo($token_data->traffic_limits); ?></q></code>.
+				</li>
+				<?php } ?>
 				<li id="prereq_cdn" class="<?php echo(ossdl_off_class_for_status($token_data->status_cdn)); ?>">CDN is configured.</li>
 				<li id="prereq_dns" class="<?php echo(ossdl_off_class_for_status($token_data->status_dns)); ?>">
 					DNS is configured and your CDN available through <code><?php echo(str_replace('http://', '', $token_data->cdn_url)); ?></code>.

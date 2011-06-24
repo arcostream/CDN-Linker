@@ -90,6 +90,10 @@ class TokenData
 	var $paid_timezone	= null;
 	/** Boolean: true if the account expires after the date, e.g. the user doesn't want it to renew */
 	var $last_period	= null;
+	/** Integer: usagr of the plan (e.g. total MB of the last 30 days) */
+	var $traffic_used	= null;
+	/** String: how the plan's traffic or bandwidth is measured */
+	var $traffic_limits	= null;
 
 	function __construct($token, $automator_url) {
 		$this->token = $token;
@@ -129,8 +133,12 @@ class TokenData
 			} else {
 				$this->paid_including = false;
 			}
+
+			if ( isset($j['traffic']) ) {
+				$this->traffic_used = $j['traffic']['used'];
+				$this->traffic_limits = $j['traffic']['interval'];
+			}
 		}
 	}
 
 }
-
