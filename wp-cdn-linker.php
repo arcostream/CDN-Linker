@@ -179,7 +179,7 @@ function ossdl_off_options() {
 		<?php } ?>
 			<td valign="top">
 				<form method="post" action="">
-				<?php if (get_option('arcostream_account_status') == 'ok') { ?>
+				<?php if (get_option('arcostream_account_status') == 'ok' || $token_data->exists) { ?>
 					<label for="arcostream_custid">Your site identifier:</label><br />
 					<input type="text" name="arcostream_custid" id="arcostream_token" value="<?php echo($token_data->token); ?>" disabled="1" size="24" class="regular-text code" /><br />
 					<input type="hidden" name="action" value="clear token" />
