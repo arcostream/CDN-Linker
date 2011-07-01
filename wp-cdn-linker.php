@@ -145,6 +145,7 @@ function ossdl_off_options() {
 		update_option('arcostream_account_status', 'unknown');
 		break;
 	case 'new token':
+		echo('You have changed your token from <code>'.get_option('arcostream_token').'</code> to <code>'.$_POST['arcostream_token'].'</code>.');
 		update_option('arcostream_token', $_POST['arcostream_token']);
 		break;
 	}
