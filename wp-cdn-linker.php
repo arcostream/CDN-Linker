@@ -143,10 +143,16 @@ function ossdl_off_options() {
 	case 'clear token':
 		update_option('arcostream_token', generate_random_token());
 		update_option('arcostream_account_status', 'unknown');
+		if (get_option('arcostream_subscribe_fragment')) { delete_option('arcostream_subscribe_fragment'); }
 		break;
 	case 'new token':
-		echo('You have changed your token from <code>'.get_option('arcostream_token').'</code> to <code>'.$_POST['arcostream_token'].'</code>.');
-		update_option('arcostream_token', $_POST['arcostream_token']);
+		if (preg_match('/[\d\w]{4,6}\-[\d\w]{4}\-[\d\w]{4}\-[\d\w]{4,4}/', $_POST['arcostream_token'])) {
+			echo('You have changed your token from <code>'.get_option('arcostream_token').'</code> to <code>'.$_POST['arcostream_token'].'</code>.');
+			if (get_option('arcostream_subscribe_fragment')) { delete_option('arcostream_subscribe_fragment'); }
+			update_option('arcostream_token', $_POST['arcostream_token']);
+		} else {
+			echo('The token you have entered is malformed. The old one <code>'.get_option('arcostream_token').'</code> has not been changed and will stay in effect.');
+		}
 		break;
 	}
 
