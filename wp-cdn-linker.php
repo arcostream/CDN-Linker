@@ -176,10 +176,17 @@ function ossdl_off_options() {
 		<h2>Speed Cache</h2>
 
 		<div id="step1">
-		<?php if (get_option('arcostream_account_status') != 'ok'
-			  && !$token_data->exists && get_option('arcostream_subscribe_fragment')) { ?>
 			<table border="0"><tbody><tr>
-			<td valign="top"><?php echo(get_option('arcostream_subscribe_fragment')); ?></td>
+		<?php if (get_option('arcostream_account_status') != 'ok' && !$token_data->exists) { ?>
+			<?php if (get_option('arcostream_subscribe_fragment')) { ?>
+				<td valign="top"><?php echo(get_option('arcostream_subscribe_fragment')); ?></td>
+			<?php } else { ?>
+				<td valign="top">
+					Oops. Our servers are down for maintenance.<br />
+					We currently cannot accept new subscriptions.<br />
+					Many apologies. Please visit this page later.
+				</td>
+			<?php } ?>
 			<td valign="middle">
 				OR
 			</td>
