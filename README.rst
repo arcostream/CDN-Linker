@@ -4,7 +4,7 @@ Speed Cache - Wordpress Plugin
 :Info: See `github <http://github.com/arcostream/CDN-Linker>`_ for the latest source.
 :Tags: CDN,links,media,performance,distribution,accelerator,content,speed,cloud
 :Requires at least: 2.7
-:Tested up to: 3.1.2
+:Tested up to: 3.1.4
 
 The one-click speed boost to your Wordpress site.
 Decreases load on your server by automatically setting up and configuring a CDN for you.

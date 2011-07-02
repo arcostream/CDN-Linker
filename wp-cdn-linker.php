@@ -3,7 +3,7 @@
 Plugin Name: Speed Cache
 Plugin URI: https://github.com/arcostream
 Description: Speeds up your Wordpress site by setting up and configuring a CDN for you.
-Version: 2.0.2
+Version: 2.0.3
 */
 
 /**
