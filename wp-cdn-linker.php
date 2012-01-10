@@ -3,7 +3,7 @@
 Plugin Name: Speed Cache
 Plugin URI: https://github.com/arcostream
 Description: Speeds up your Wordpress site by setting up and configuring a CDN for you.
-Version: 2.0.3
+Version: 2.0.4
 */
 
 /**
@@ -160,7 +160,7 @@ function ossdl_off_options() {
 	global $arcostream_automator;
 	if (get_option('arcostream_account_status') != 'ok'
 	    && !$token_data->exists && !get_option('arcostream_subscribe_fragment')) {
-		$signup_fragment_url = $arcostream_automator.'/plan/1/wp-button?token='.get_option('arcostream_token')
+		$signup_fragment_url = $arcostream_automator.'/plan/suggested/wp-button?token='.get_option('arcostream_token')
 					.'&siteurl='.get_option('siteurl');
 		$fragment = get_from_remote($signup_fragment_url);
 		if (!!$fragment && strstr($fragment, 'SITE/TOKEN MISMATCH')) {
